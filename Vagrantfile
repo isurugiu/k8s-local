@@ -2,7 +2,7 @@
 # Mostly stolen from https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/
 ##
 
-IMAGE_NAME = "bento/ubuntu-16.04"
+IMAGE_NAME = "bento/ubuntu-18.04"
 N = 3
 
 Vagrant.configure("2") do |config|

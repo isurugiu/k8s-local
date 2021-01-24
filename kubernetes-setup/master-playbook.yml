@@ -90,7 +90,7 @@
       state: restarted
 
   - name: Initialize the Kubernetes cluster using kubeadm
-    #192.168.1.0/24 is bridged to my PC Home LAN IP
+    #192.168.1.0/24 is bridged to my PC Home LAN
     #172.0.0.1/16 is the CIDR of choice for the POD network
     #Make sure these CIDRs do not conflict with any sort of internal network already in use by Vagrant or OracleVM, otherwise it's gonna take time to troubleshoot eventual issues
     command: kubeadm init --apiserver-advertise-address="192.168.1.200" --apiserver-cert-extra-sans="192.168.1.200"  --node-name k8s-master --pod-network-cidr=172.0.0.1/16  
@@ -105,6 +105,14 @@
   - name: Install calico pod network
     become: false
     command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+  - name: Install metrics server
+    become: false
+    command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
+
+  - name: Install dashboard
+    become: false
+    command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 
   - name: Generate join command
     command: kubeadm token create --print-join-command
