@@ -3,6 +3,10 @@
 - hosts: all
   become: true
   tasks:
+  - name: Set hostname
+    hostname:
+      name: "{{ node_hostname }}"
+
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"

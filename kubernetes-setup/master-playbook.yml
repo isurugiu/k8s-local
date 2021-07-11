@@ -3,6 +3,10 @@
 - hosts: all
   become: true
   tasks:
+  - name: Set hostname
+    hostname:
+      name: "{{ node_hostname }}"
+    
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -105,14 +109,6 @@
   - name: Install calico pod network
     become: false
     command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-
-  - name: Install metrics server
-    become: false
-    command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
-
-  - name: Install dashboard
-    become: false
-    command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 
   - name: Generate join command
     command: kubeadm token create --print-join-command
