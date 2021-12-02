@@ -42,6 +42,20 @@
       - containerd.io
     notify:
       - docker status
+      
+  - name: Docker must use systemd as cgroup criver
+    copy:
+      dest: /etc/docker/daemon.json
+      content: |
+        {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+        }
+
+  - name: Restart docker
+    service:
+      name: docker
+      daemon_reload: yes
+      state: restarted
 
   - name: Add vagrant user to docker group
     user:

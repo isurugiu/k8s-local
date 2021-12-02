@@ -29,7 +29,7 @@
     apt_repository:
       repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
       state: present
-
+  
   - name: Install docker and its dependecies
     apt: 
       name: "{{ packages }}"
@@ -42,6 +42,20 @@
       - containerd.io
     notify:
       - docker status
+
+  - name: Docker must use systemd as cgroup criver
+    copy:
+      dest: /etc/docker/daemon.json
+      content: |
+        {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+        }
+
+  - name: Restart docker
+    service:
+      name: docker
+      daemon_reload: yes
+      state: restarted
 
   - name: Add vagrant user to docker group
     user:
@@ -81,6 +95,7 @@
         - kubelet 
         - kubeadm 
         - kubectl
+
   - name: Configure node ip
     lineinfile:
       create: yes
@@ -97,7 +112,7 @@
     #192.168.1.0/24 is bridged to my PC Home LAN
     #172.0.0.1/16 is the CIDR of choice for the POD network
     #Make sure these CIDRs do not conflict with any sort of internal network already in use by Vagrant or OracleVM, otherwise it's gonna take time to troubleshoot eventual issues
-    command: kubeadm init --apiserver-advertise-address="192.168.1.200" --apiserver-cert-extra-sans="192.168.1.200"  --node-name k8s-master --pod-network-cidr=172.0.0.1/16  
+    command: kubeadm init --apiserver-advertise-address="{{ node_ip }}" --apiserver-cert-extra-sans="{{ node_ip }}" --node-name {{ node_hostname }} --pod-network-cidr=172.0.0.1/16  
 
   - name: Setup kubeconfig for vagrant user
     command: "{{ item }}"
@@ -127,4 +142,11 @@
  
   handlers:
    - name: docker status
-     service: name=docker state=started
+     ansible.builtin.service: 
+       name: docker
+       state: started
+
+   - name: docker restart
+     ansible.builtin.service:
+       name: docker
+       state: restarted
