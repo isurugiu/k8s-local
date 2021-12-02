@@ -5,7 +5,7 @@
 
 IMAGE_NAME = "bento/ubuntu-20.04"
 BOX_VERSION = "202107.07.0"
-K8S_VERSION = "1.21.2"
+K8S_VERSION = "1.22.4"
 N = 3
 
 Vagrant.configure("2") do |config|
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
             ansible.verbose = true
             ansible.extra_vars = {
                 node_ip: "192.168.1.200",
-                node_hostname: "k8s-master-#{K8S_VERSION}"
+                node_hostname: "k8s-master"
             }
         end
     end
